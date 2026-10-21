@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>lite_ik_node</name>
+  <version>0.1.0</version>
+  <description>Lite 双臂运动学库与独立 IK 节点。</description>
+  <maintainer email="marki@example.com">marki</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>ament_index_cpp</depend>
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>move_msgs</depend>
+  <depend>eigen</depend>
+  <depend>yaml-cpp</depend>
+  <depend>orocos_kdl_vendor</depend>
+  <depend>kdl_parser</depend>
+  <depend>moveit_core</depend>
+  <depend>moveit_msgs</depend>
+  <depend>pluginlib</depend>
+  <depend>srdfdom</depend>
+  <depend>urdf</depend>
+  <depend>libcurl-dev</depend>
+  <exec_depend>lite_description</exec_depend>
+  <exec_depend>moveit_kinematics</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

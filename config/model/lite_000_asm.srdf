@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="lite_000_asm">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="right_arm_group">
+        <joint name="right_shoulder_pitch"/>
+        <joint name="right_shoulder_roll"/>
+        <joint name="right_shoulder_yaw"/>
+        <joint name="right_elbow_pitch"/>
+        <joint name="right_wrist_yaw"/>
+        <joint name="right_wrist_roll"/>
+        <joint name="right_wrist_pitch"/>
+    </group>
+    <group name="left_arm_group">
+        <joint name="left_shoulder_pitch"/>
+        <joint name="left_shoulder_roll"/>
+        <joint name="left_shoulder_yaw"/>
+        <joint name="left_elbow_pitch"/>
+        <joint name="left_wrist_yaw"/>
+        <joint name="left_wrist_roll"/>
+        <joint name="left_wrist_pitch"/>
+    </group>
+    <group name="arms_group">
+        <joint name="left_shoulder_pitch"/>
+        <joint name="left_shoulder_roll"/>
+        <joint name="left_shoulder_yaw"/>
+        <joint name="left_elbow_pitch"/>
+        <joint name="left_wrist_yaw"/>
+        <joint name="left_wrist_roll"/>
+        <joint name="left_wrist_pitch"/>
+        <joint name="right_shoulder_pitch"/>
+        <joint name="right_shoulder_roll"/>
+        <joint name="right_shoulder_yaw"/>
+        <joint name="right_elbow_pitch"/>
+        <joint name="right_wrist_yaw"/>
+        <joint name="right_wrist_roll"/>
+        <joint name="right_wrist_pitch"/>
+    </group>
+    <group name="left_grip_group">
+        <link name="left_gripper_finger_left_link"/>
+        <link name="left_gripper_finger_right_link"/>
+        <link name="left_gripper_tip_middle_link"/>
+    </group>
+    <group name="right_grip_group">
+        <link name="right_gripper_tip_middle_link"/>
+        <link name="right_gripper_finger_left_link"/>
+        <link name="right_gripper_finger_right_link"/>
+    </group>
+    <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
+    <group_state name="start" group="left_arm_group">
+        <joint name="left_elbow_pitch" value="-1.7"/>
+        <joint name="left_shoulder_pitch" value="0.3"/>
+        <joint name="left_shoulder_roll" value="-1"/>
+        <joint name="left_shoulder_yaw" value="0"/>
+        <joint name="left_wrist_pitch" value="0"/>
+        <joint name="left_wrist_roll" value="0"/>
+        <joint name="left_wrist_yaw" value="0"/>
+    </group_state>
+    <group_state name="zero" group="right_arm_group">
+        <joint name="right_elbow_pitch" value="0"/>
+        <joint name="right_shoulder_pitch" value="0"/>
+        <joint name="right_shoulder_roll" value="0"/>
+        <joint name="right_shoulder_yaw" value="0"/>
+        <joint name="right_wrist_pitch" value="0"/>
+        <joint name="right_wrist_roll" value="0"/>
+        <joint name="right_wrist_yaw" value="0"/>
+    </group_state>
+    <group_state name="stand" group="left_grip_group">
+        <joint name="left_gripper" value="0.047"/>
+    </group_state>
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="right_gripper" parent_link="right_wrist_pitch_link" group="right_grip_group"/>
+    <end_effector name="left_gripper" parent_link="left_wrist_pitch_link" group="left_grip_group"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="virtual_joint" type="fixed" parent_frame="word" child_link="world_root"/>
+    <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
+    <passive_joint name="left_gripper_passive_joint"/>
+    <passive_joint name="right_gripper_passive_joint"/>
+    <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="left_gripper_finger_left_link" link2="left_gripper_finger_right_link" reason="Default"/>
+    <disable_collisions link1="left_gripper_finger_left_link" link2="left_shoulder_pitch_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_left_link" link2="left_shoulder_roll_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_left_link" link2="left_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_left_link" link2="left_wrist_pitch_link" reason="Adjacent"/>
+    <disable_collisions link1="left_gripper_finger_left_link" link2="left_wrist_roll_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_left_link" link2="left_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_right_link" link2="left_shoulder_pitch_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_right_link" link2="left_shoulder_roll_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_right_link" link2="left_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_right_link" link2="left_wrist_pitch_link" reason="Adjacent"/>
+    <disable_collisions link1="left_gripper_finger_right_link" link2="left_wrist_roll_link" reason="Never"/>
+    <disable_collisions link1="left_gripper_finger_right_link" link2="left_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="left_shoulder_roll_link" reason="Adjacent"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="left_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="left_wrist_pitch_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="left_wrist_roll_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="left_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="right_shoulder_pitch_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="right_shoulder_roll_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="right_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="right_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_pitch_link" link2="world_root" reason="Adjacent"/>
+    <disable_collisions link1="left_shoulder_roll_link" link2="left_shoulder_yaw_link" reason="Adjacent"/>
+    <disable_collisions link1="left_shoulder_roll_link" link2="left_wrist_pitch_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_roll_link" link2="left_wrist_roll_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_roll_link" link2="left_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_roll_link" link2="right_shoulder_pitch_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_roll_link" link2="right_shoulder_roll_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_roll_link" link2="right_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_yaw_link" link2="left_wrist_pitch_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_yaw_link" link2="left_wrist_roll_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_yaw_link" link2="left_wrist_yaw_motor_link" reason="Adjacent"/>
+    <disable_collisions link1="left_shoulder_yaw_link" link2="right_shoulder_pitch_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_yaw_link" link2="right_shoulder_roll_link" reason="Never"/>
+    <disable_collisions link1="left_shoulder_yaw_link" link2="right_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="left_wrist_pitch_link" link2="left_wrist_roll_link" reason="Adjacent"/>
+    <disable_collisions link1="left_wrist_pitch_link" link2="left_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="left_wrist_roll_link" link2="left_wrist_yaw_motor_link" reason="Adjacent"/>
+    <disable_collisions link1="left_wrist_roll_link" link2="right_gripper_finger_right_link" reason="Never"/>
+    <disable_collisions link1="left_wrist_yaw_motor_link" link2="right_shoulder_pitch_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_left_link" link2="right_gripper_finger_right_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_left_link" link2="right_shoulder_pitch_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_left_link" link2="right_shoulder_roll_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_left_link" link2="right_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_left_link" link2="right_wrist_pitch_link" reason="Adjacent"/>
+    <disable_collisions link1="right_gripper_finger_left_link" link2="right_wrist_roll_motor_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_left_link" link2="right_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_right_link" link2="right_shoulder_pitch_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_right_link" link2="right_shoulder_roll_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_right_link" link2="right_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_right_link" link2="right_wrist_pitch_link" reason="Adjacent"/>
+    <disable_collisions link1="right_gripper_finger_right_link" link2="right_wrist_roll_motor_link" reason="Never"/>
+    <disable_collisions link1="right_gripper_finger_right_link" link2="right_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_pitch_link" link2="right_shoulder_roll_link" reason="Adjacent"/>
+    <disable_collisions link1="right_shoulder_pitch_link" link2="right_shoulder_yaw_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_pitch_link" link2="right_wrist_pitch_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_pitch_link" link2="right_wrist_roll_motor_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_pitch_link" link2="right_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_pitch_link" link2="world_root" reason="Adjacent"/>
+    <disable_collisions link1="right_shoulder_roll_link" link2="right_shoulder_yaw_link" reason="Adjacent"/>
+    <disable_collisions link1="right_shoulder_roll_link" link2="right_wrist_pitch_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_roll_link" link2="right_wrist_roll_motor_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_roll_link" link2="right_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_yaw_link" link2="right_wrist_pitch_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_yaw_link" link2="right_wrist_roll_motor_link" reason="Never"/>
+    <disable_collisions link1="right_shoulder_yaw_link" link2="right_wrist_yaw_motor_link" reason="Adjacent"/>
+    <disable_collisions link1="right_wrist_pitch_link" link2="right_wrist_roll_motor_link" reason="Adjacent"/>
+    <disable_collisions link1="right_wrist_pitch_link" link2="right_wrist_yaw_motor_link" reason="Never"/>
+    <disable_collisions link1="right_wrist_roll_motor_link" link2="right_wrist_yaw_motor_link" reason="Adjacent"/>
+</robot>

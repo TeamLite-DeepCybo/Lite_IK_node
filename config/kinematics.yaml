@@ -1,0 +1,24 @@
+# IK 求解器配置。
+#
+# ⚠️ kinematics_solver_timeout 单位是**秒**。原值 0.005（5 ms）对
+#    kdl_kinematics_plugin 几乎等于不搜索：KDL 是数值迭代求解器，
+#    而本机是 7 自由度冗余臂，5 ms 内往往连一轮迭代都跑不完，
+#    于是 MoveIt 频繁返回 -31 (NO_IK_SOLUTION)。
+#    改为 0.05（50 ms）：IK 调用频率 15 Hz（66 ms 预算），仍有余量。
+#    本文件是 install/ 下的**软链目标**，改完无需 colcon build，重启 move_group 生效。
+#
+# 进一步改善（需额外装包）：
+#   kinematics_solver: pick_ik/PickIkPlugin     # 对冗余臂更稳
+#   kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
+left_arm_group:
+  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+  kinematics_solver_search_resolution: 0.005
+  kinematics_solver_timeout: 0.05
+right_arm_group:
+  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+  kinematics_solver_search_resolution: 0.005
+  kinematics_solver_timeout: 0.05
+arms_group:
+  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+  kinematics_solver_search_resolution: 0.005
+  kinematics_solver_timeout: 0.05

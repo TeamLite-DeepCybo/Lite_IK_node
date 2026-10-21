@@ -1,0 +1,15 @@
+lite_ik_node:
+  ros__parameters:
+    input_target_topic: /lite_move_controller/task_target
+    output_joint_topic: /lite_move_controller/joint_target
+    joint_states_topic: /joint_states
+    root_link: world_root
+    tip_link_left: left_gripper_tip_middle_link
+    tip_link_right: right_gripper_tip_middle_link
+    urdf_path: ""
+    srdf_path: ""
+    ik:
+      solver_plugin: pick_ik/PickIkPlugin
+    max_joint_jump_rad: 0.35
+    max_joint_vel: 2.0
+    max_joint_acc: 12.0

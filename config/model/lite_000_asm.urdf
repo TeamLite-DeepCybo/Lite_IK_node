@@ -1,0 +1,886 @@
+<?xml version="1.0" ?>
+<!-- =================================================================================== -->
+<!-- |    Generated from the Lite robot xacro and bundled for IK initialization.       | -->
+<!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
+<!-- =================================================================================== -->
+<robot name="lite_000_asm">
+  <link name="right_wrist_yaw_motor_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.0001343 -0.0214752 -0.0000049"/>
+      <mass value="0.0000254"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_wrist_yaw_motor_link_visual.stl"/>
+      </geometry>
+      <material name="lite_wrist_yaw_motor">
+        <color rgba="0.76470588 0.15294118 0.16862745 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.570796327 -3.673205103e-06 -7.3e-06" xyz="-1.221561089e-07 -0.033256 0"/>
+      <geometry>
+        <cylinder length="0.12" radius="0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_wrist_yaw_motor_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.0001343 -0.0214752 -0.0000049"/>
+      <mass value="0.0000254"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_wrist_yaw_motor_link_visual.stl"/>
+      </geometry>
+      <material name="lite_wrist_yaw_motor">
+        <color rgba="0.76470588 0.15294118 0.16862745 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="2.509931214 -1.570791833 2.202461439" xyz="1.093138492e-07 -0.0297598 0"/>
+      <geometry>
+        <cylinder length="0.12" radius="0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_elbow_pitch_link">
+    <inertial>
+      <origin rpy="0 0 0.86488" xyz="-0.0146726 -0.0332905 -0.013722"/>
+      <mass value="0.0000964"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0" iyy="0.0000001" iyz="0" izz="0.0000001"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_elbow_pitch_link_visual.stl"/>
+      </geometry>
+      <material name="lite_elbow_pitch">
+        <color rgba="0.94117647 0.96078431 0.97647059 1.00000000"/>
+      </material>
+    </visual>
+  </link>
+  <link name="left_shoulder_pitch_link">
+    <inertial>
+      <origin rpy="-0.299414 0 0" xyz="-0.017422 0.0100505 0.0023346"/>
+      <mass value="0.0000497"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_shoulder_pitch_link_visual.stl"/>
+      </geometry>
+      <material name="lite_shoulder_pitch">
+        <color rgba="0.77254902 0.16470588 0.18823529 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.25 0 0" xyz="-0.0408173 -0.0001475 -0.0003191"/>
+      <geometry>
+        <cylinder length="0.06" radius="0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_shoulder_roll_link">
+    <inertial>
+      <origin rpy="0 0.314302 0" xyz="0.0402802 -0.01516 -0.0119022"/>
+      <mass value="0.0000948"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0.0000001" iyz="0" izz="0.0000001"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_shoulder_roll_link_visual.stl"/>
+      </geometry>
+      <material name="lite_shoulder_roll">
+        <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="-3.1415926 1.2415927 -3.1415926" xyz="0.0911512 -0.0269397 -0.0299579"/>
+      <geometry>
+        <cylinder length="0.1" radius="0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_shoulder_yaw_link">
+    <inertial>
+      <origin rpy="-0.43982 0 0" xyz="-0.0338829 0.0029572 0.0055402"/>
+      <mass value="0.0001271"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0" iyy="0.0000001" iyz="0" izz="0.0000001"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_shoulder_yaw_link_visual.stl"/>
+      </geometry>
+      <material name="lite_shoulder_yaw">
+        <color rgba="0.10196078 0.10588235 0.12549020 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="-0.455 0 0" xyz="-0.0810676 0.0076647 -0.0043353"/>
+      <geometry>
+        <cylinder length="0.06" radius="0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_wrist_roll_link">
+    <inertial>
+      <origin rpy="0 -0.414095 0" xyz="0.0068741 0.026505 -0.0140495"/>
+      <mass value="0.0000165"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_wrist_roll_link_visual.stl"/>
+      </geometry>
+      <material name="lite_wrist_roll">
+        <color rgba="0.10196078 0.09411765 0.13725490 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 -0.414095 0" xyz="-0.0006294789133 0.0249693 -0.0004228140225"/>
+      <geometry>
+        <cylinder length="0.045" radius="0.026"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_gripper_finger_left_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.01125 -0.0034914 0.0017499"/>
+      <mass value="0.0000019"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_gripper_finger_left_link_visual.stl"/>
+      </geometry>
+      <material name="lite_gripper_finger_black">
+        <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_gripper_finger_left_link_collision.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_gripper_finger_left_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.01125 -0.0034914 0.0017499"/>
+      <mass value="0.0000019"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_gripper_finger_left_link_visual.stl"/>
+      </geometry>
+      <material name="lite_gripper_finger_black">
+        <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_gripper_finger_left_link_collision.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_gripper_finger_right_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.01125 -0.0034914 0.0017499"/>
+      <mass value="0.0000019"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_gripper_finger_right_link_visual.stl"/>
+      </geometry>
+      <material name="lite_gripper_finger_black">
+        <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_gripper_finger_right_link_collision.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_gripper_finger_right_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.01125 -0.0034914 0.0017499"/>
+      <mass value="0.0000019"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_gripper_finger_right_link_visual.stl"/>
+      </geometry>
+      <material name="lite_gripper_finger_black">
+        <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_gripper_finger_right_link_collision.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_elbow_pitch_link">
+    <inertial>
+      <origin rpy="0 0 -0.0471294" xyz="0.0340985 -0.0119819 -0.0129345"/>
+      <mass value="0.0000971"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0" iyy="0.0000001" iyz="0" izz="0.0000001"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_elbow_pitch_link_visual.stl"/>
+      </geometry>
+      <material name="lite_elbow_pitch">
+        <color rgba="0.94117647 0.96078431 0.97647059 1.00000000"/>
+      </material>
+    </visual>
+  </link>
+  <link name="right_shoulder_pitch_link">
+    <inertial>
+      <origin rpy="0.25946 0 0" xyz="0.017422 0.0072834 0.0073085"/>
+      <mass value="0.0000497"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_shoulder_pitch_link_visual.stl"/>
+      </geometry>
+      <material name="lite_shoulder_pitch">
+        <color rgba="0.77254902 0.16470588 0.18823529 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="-1.32 0 0" xyz="0.0408556 -0.0013229 -0.0002332"/>
+      <geometry>
+        <cylinder length="0.06" radius="0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_shoulder_roll_link">
+    <inertial>
+      <origin rpy="0 -0.582412 0" xyz="0.0354428 -0.0143616 0.0220107"/>
+      <mass value="0.0000954"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0" iyy="0.0000001" iyz="0" izz="0.0000001"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_shoulder_roll_link_visual.stl"/>
+      </geometry>
+      <material name="lite_shoulder_roll">
+        <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0.99 0" xyz="0.0810147 -0.0248544 0.0537949"/>
+      <geometry>
+        <cylinder length="0.1" radius="0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_shoulder_yaw_link">
+    <inertial>
+      <origin rpy="-1.55277 0 0" xyz="0.0338839 0.0062782 -0.0002046"/>
+      <mass value="0.0001271"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0" iyy="0.0000001" iyz="0" izz="0.0000001"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_shoulder_yaw_link_visual.stl"/>
+      </geometry>
+      <material name="lite_shoulder_yaw">
+        <color rgba="0.10196078 0.10588235 0.12549020 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.5707963 0 0" xyz="0.0799504 0 -0.0092276"/>
+      <geometry>
+        <cylinder length="0.06" radius="0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_wrist_pitch_link">
+    <inertial>
+      <origin rpy="0 0 -0.725768" xyz="0.023173 -0.0205664 -0.0112555"/>
+      <mass value="0.0000274"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_wrist_pitch_link_visual.stl"/>
+      </geometry>
+      <material name="lite_wrist_pitch">
+        <color rgba="0.47843137 0.45098039 0.47843137 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="-0.785393176 -0.06981242277 0.845026119" xyz="0.1208810353 -0.1117893004 0.02800887784"/>
+      <geometry>
+        <box size="0.04 0.04 0.01"/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin rpy="1.500983127 -3.666126471e-06 2.415824556" xyz="0.07690913134 -0.06851299558 -0.01754819854"/>
+      <geometry>
+        <cylinder length="0.18" radius="0.005"/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin rpy="1.5708 -0.0698132 0.845028" xyz="0.05264540883 -0.04689062756 -0.01853816177"/>
+      <geometry>
+        <cylinder length="0.04" radius="0.023"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_wrist_pitch_link">
+    <inertial>
+      <origin rpy="0 0 -0.393547" xyz="0.0286135 -0.0118841 -0.0112555"/>
+      <mass value="0.0000274"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_wrist_pitch_link_visual.stl"/>
+      </geometry>
+      <material name="lite_wrist_pitch">
+        <color rgba="0.47843137 0.45098039 0.47843137 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="-0.7853878688 -0.06981242277 1.177248119" xyz="0.1513366084 -0.0663160654 0.02735937002"/>
+      <geometry>
+        <box size="0.04 0.04 0.01"/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin rpy="1.500983127 -3.666126471e-06 2.748046556" xyz="0.09509964415 -0.0395609147 -0.01761512239"/>
+      <geometry>
+        <cylinder length="0.18" radius="0.005"/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin rpy="1.5708 -0.0698132 1.17725" xyz="0.0651106442 -0.02703434655 -0.01860488611"/>
+      <geometry>
+        <cylinder length="0.04" radius="0.023"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_wrist_roll_motor_link">
+    <inertial>
+      <origin rpy="0 0.0743208 0" xyz="0.0006071 0.0259549 0.0117595"/>
+      <mass value="0.0000121"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_wrist_roll_motor_link_visual.stl"/>
+      </geometry>
+      <material name="lite_wrist_roll">
+        <color rgba="0.10196078 0.09411765 0.13725490 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0.0743208 0" xyz="0.0012916 0.0269225 -0.000746"/>
+      <geometry>
+        <cylinder length="0.045002" radius="0.026"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="world_root">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/world_root_visual.stl"/>
+      </geometry>
+      <material name="lite_world_root">
+        <color rgba="0.92156863 0.92156863 0.92156863 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="7.346419954e-06 0 3.141592654" xyz="-1.937120689e-06 -0.01429721433 0.759186505"/>
+      <geometry>
+        <cylinder length="0.209443" radius="0.054721"/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin rpy="0 0 0" xyz="-0.0000037 -0.006508 0.952301"/>
+      <geometry>
+        <box size="0.168 0.09 0.16"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="head_camera_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
+    </inertial>
+  </link>
+  <link name="left_wrist_camera_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
+    </inertial>
+  </link>
+  <link name="right_wrist_camera_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
+    </inertial>
+  </link>
+  <link name="left_gripper_tip_middle_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
+    </inertial>
+  </link>
+  <link name="right_gripper_tip_middle_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
+    </inertial>
+  </link>
+  <joint name="left_shoulder_pitch" type="revolute">
+    <parent link="world_root"/>
+    <child link="left_shoulder_pitch_link"/>
+    <origin rpy="0.2994274351 0.1745330072 -3.141587582" xyz="0.04962222198 -0.007996932602 0.7928799915"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="1" lower="-3.1415916" upper="0.7853984" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>-1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="left_shoulder_roll" type="revolute">
+    <parent link="left_shoulder_pitch_link"/>
+    <child link="left_shoulder_roll_link"/>
+    <origin rpy="-2.8052323666 0.4653133292 -2.9859660904" xyz="-0.04100000351 0.02565540881 -0.007919662552"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1" lower="-1.57079475" upper="1.91986025" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>-1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="left_shoulder_yaw" type="revolute">
+    <parent link="left_shoulder_roll_link"/>
+    <child link="left_shoulder_yaw_link"/>
+    <origin rpy="-2.701771727 -0.3143027 -3.14158898" xyz="0.1148822482 -0.02709980309 -0.03734592284"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1" lower="-1.5708" upper="1.5708" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="left_elbow_pitch" type="revolute">
+    <parent link="left_shoulder_yaw_link"/>
+    <child link="left_elbow_pitch_link"/>
+    <origin rpy="-0.2962759628 -0.3299797087 -0.8151948384" xyz="-0.0800000025 0.02048037438 0.02003692937"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1" lower="-2.356198" upper="0" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>-1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="left_wrist_yaw" type="revolute">
+    <parent link="left_elbow_pitch_link"/>
+    <child link="left_wrist_yaw_motor_link"/>
+    <origin rpy="2.1761163 1.5707931 1.4702039" xyz="-0.0339087 -0.0551924 -0.0271"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1" lower="-1.5707945" upper="1.5707945" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="left_wrist_roll" type="revolute">
+    <parent link="left_wrist_yaw_motor_link"/>
+    <child link="left_wrist_roll_link"/>
+    <origin rpy="3.141589755 -0.4140965 1.570801166" xyz="-0.02599949677 -0.1370000955 -6.899333461e-08"/>
+    <axis xyz="0 -1 0"/>
+    <limit effort="1" lower="-0.6981335" upper="0.6981335" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>-1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="left_wrist_pitch" type="revolute">
+    <parent link="left_wrist_roll_link"/>
+    <child link="left_wrist_pitch_link"/>
+    <origin rpy="0.2838290718 0.30570169 -2.371804821" xyz="-0.009053135665 0.026 0.02059831873"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1" lower="-0.7854" upper="0.7854" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>-1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="right_shoulder_pitch" type="revolute">
+    <parent link="world_root"/>
+    <child link="right_shoulder_pitch_link"/>
+    <origin rpy="-0.2594571717 -0.1745330458 3.141587621" xyz="-0.04962609453 -0.007796944815 0.7928799997"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="1" lower="-3.1415916" upper="0.7853984" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="right_shoulder_roll" type="revolute">
+    <parent link="right_shoulder_pitch_link"/>
+    <child link="right_shoulder_roll_link"/>
+    <origin rpy="0.3501154544 0.7257811284 0.2377861735" xyz="0.04099980899 0.02527477392 0.006709218258"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1" lower="-1.91986025" upper="1.57079475" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>-1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="right_shoulder_yaw" type="revolute">
+    <parent link="right_shoulder_roll_link"/>
+    <child link="right_shoulder_yaw_link"/>
+    <origin rpy="1.55277638 -0.5824100464 3.673220854e-06" xyz="0.1008846481 -0.02639984048 0.06644494687"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="1" lower="-1.5707972" upper="1.5707972" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="right_elbow_pitch" type="revolute">
+    <parent link="right_shoulder_yaw_link"/>
+    <child link="right_elbow_pitch_link"/>
+    <origin rpy="-1.552756021 0.04712209601 0.0008482378368" xyz="0.08000000295 0.0270258376 -0.009514478403"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1" lower="0" upper="2.356199" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>-1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="right_wrist_yaw" type="revolute">
+    <parent link="right_elbow_pitch_link"/>
+    <child link="right_wrist_yaw_motor_link"/>
+    <origin rpy="3.1415913 5.5e-06 -1.6179277" xyz="0.0634578 -0.0130041 -0.0264"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1" lower="-1.5707955" upper="1.5707955" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="right_wrist_roll" type="revolute">
+    <parent link="right_wrist_yaw_motor_link"/>
+    <child link="right_wrist_roll_motor_link"/>
+    <origin rpy="1.57079999 2.727450251e-07 -1.645121" xyz="-4.077257665e-07 -0.137 -0.026"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1" lower="-0.698132" upper="0.698132" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="right_wrist_pitch" type="revolute">
+    <parent link="right_wrist_roll_motor_link"/>
+    <child link="right_wrist_pitch_link"/>
+    <origin rpy="0.02854527272 0.06862962747 0.3945277653" xyz="0.0016707 0.026 0.0224379"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1" lower="-0.785399" upper="0.785399" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>-1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="left_gripper" type="prismatic">
+    <parent link="left_wrist_pitch_link"/>
+    <child link="left_gripper_finger_left_link"/>
+    <origin rpy="1.5708 -0.0698132 0.845028" xyz="0.1040961904 -0.04585909073 -0.01258790935"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1" lower="0" upper="0.047" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="right_gripper" type="prismatic">
+    <parent link="right_wrist_pitch_link"/>
+    <child link="right_gripper_finger_left_link"/>
+    <origin rpy="1.5708 -0.0698132 1.17725" xyz="0.113421574 -0.009254971529 -0.01265282701"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1" lower="0" upper="0.047" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+  </joint>
+  <joint name="left_gripper_passive_joint" type="prismatic">
+    <parent link="left_wrist_pitch_link"/>
+    <child link="left_gripper_finger_right_link"/>
+    <origin rpy="1.5708 -0.0698132 0.845028" xyz="0.05741859357 -0.09846390861 -0.01750574286"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="1" lower="0" upper="0.047" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+    <mimic joint="left_gripper" multiplier="1" offset="0"/>
+  </joint>
+  <joint name="right_gripper_passive_joint" type="prismatic">
+    <parent link="right_wrist_pitch_link"/>
+    <child link="right_gripper_finger_right_link"/>
+    <origin rpy="1.5708 -0.0698132 1.17725" xyz="0.08644316447 -0.07423085268 -0.0175724672"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="1" lower="0" upper="0.047" velocity="1"/>
+    <hardware>
+      <motorType>None</motorType>
+      <motorDirection>1</motorDirection>
+      <armature>0</armature>
+    </hardware>
+    <mimic joint="right_gripper" multiplier="1" offset="0"/>
+  </joint>
+  <joint name="head_camera_joint" type="fixed">
+    <parent link="world_root"/>
+    <child link="head_camera_link"/>
+    <origin rpy="-2.3561871804 0 3.1415926264" xyz="-1.937121605e-06 -0.1082753717 1.010000795"/>
+  </joint>
+  <joint name="left_wrist_camera_joint" type="fixed">
+    <parent link="left_wrist_pitch_link"/>
+    <child link="left_wrist_camera_link"/>
+    <origin rpy="-2.3561994776 0.0698124228 -2.2965665346" xyz="0.1237537251 -0.1140010331 0.02440096001"/>
+  </joint>
+  <joint name="right_wrist_camera_joint" type="fixed">
+    <parent link="right_wrist_pitch_link"/>
+    <child link="right_wrist_camera_link"/>
+    <origin rpy="-2.3562047848 0.0698124228 -1.9643445346" xyz="0.1542184407 -0.06728357609 0.02433415705"/>
+  </joint>
+  <joint name="left_gripper_tip_middle_joint" type="fixed">
+    <parent link="left_wrist_pitch_link"/>
+    <child link="left_gripper_tip_middle_link"/>
+    <origin rpy="1.5708 -0.0698132 0.845028" xyz="0.1260019346 -0.1111205665 -0.01849347726"/>
+  </joint>
+  <joint name="right_gripper_tip_middle_joint" type="fixed">
+    <parent link="right_wrist_pitch_link"/>
+    <child link="right_gripper_tip_middle_link"/>
+    <origin rpy="1.5708 -0.0698132 1.17725" xyz="0.1551621984 -0.06441037825 -0.01860434352"/>
+  </joint>
+  <ros2_control name="LiteSystem" type="system">
+    <hardware>
+      <plugin>mock_components/GenericSystem</plugin>
+    </hardware>
+    <joint name="left_shoulder_pitch">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="left_shoulder_roll">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="left_shoulder_yaw">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="left_elbow_pitch">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="left_wrist_yaw">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="left_wrist_roll">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="left_wrist_pitch">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="right_shoulder_pitch">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="right_shoulder_roll">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="right_shoulder_yaw">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="right_elbow_pitch">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="right_wrist_yaw">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="right_wrist_roll">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="right_wrist_pitch">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="left_gripper">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="right_gripper">
+      <command_interface name="position"/>
+      <command_interface name="velocity"/>
+      <command_interface name="effort"/>
+      <command_interface name="stiffness"/>
+      <command_interface name="damping"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+  </ros2_control>
+</robot>
