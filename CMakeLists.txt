@@ -24,6 +24,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
@@ -89,3 +90,5 @@ ament_export_dependencies(
   rclcpp Eigen3 orocos_kdl_vendor kdl_parser moveit_core moveit_msgs
   pluginlib srdfdom urdf yaml-cpp CURL)
 ament_package()
+
+target_link_libraries(lite_ik_node OpenSSL::Crypto)

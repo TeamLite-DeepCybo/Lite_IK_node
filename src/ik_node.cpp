@@ -37,7 +37,12 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <openssl/sha.h>
+#include <iomanip>
 
+#include <move_msgs/srv/query_ik.hpp>
+#include <move_msgs/srv/query_fk.hpp>
+#include "lite_ik_node/ik_backend.hpp"
 #include "lite_ik_node/differential_ik.hpp"
 #include "lite_ik_node/ik_kdl.hpp"
 #include "lite_ik_node/ik_moveit.hpp"
@@ -190,6 +195,10 @@ private:
 
     pub_joint_targets_ = create_publisher<move_msgs::msg::MoveTargetArray>(
         output_joint_topic_, 10);
+    ik_query_srv_ = create_service<move_msgs::srv::QueryIk>("~/ik_query",
+      std::bind(&IkNode::onIkQuery, this, std::placeholders::_1, std::placeholders::_2));
+    fk_query_srv_ = create_service<move_msgs::srv::QueryFk>("~/fk_query",
+      std::bind(&IkNode::onFkQuery, this, std::placeholders::_1, std::placeholders::_2));
   }
 
   void setupArms()
@@ -198,6 +207,13 @@ private:
     if (urdf.empty()) {
       RCLCPP_FATAL(get_logger(), "无法读取 URDF，IK 节点初始化终止");
       return;
+    }
+    {
+      unsigned char digest[SHA256_DIGEST_LENGTH];
+      SHA256(reinterpret_cast<const unsigned char *>(urdf.data()), urdf.size(), digest);
+      std::ostringstream hex;
+      for (auto byte : digest) {hex << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);}
+      model_sha256_ = hex.str();
     }
     const std::string srdf = loadSrdf();
 
@@ -477,6 +493,93 @@ private:
     }
   }
 
+  ArmIkContext * queryArm(const std::string & name)
+  {
+    for (auto & arm : arms_) {if (arm.name == name) {return &arm;}}
+    return nullptr;
+  }
+
+  bool validQueryJoints(const ArmIkContext & arm, const std::vector<double> & q)
+  {
+    if (q.size() != arm.joints.size()) {return false;}
+    for (std::size_t i = 0; i < q.size(); ++i) {
+      if (!std::isfinite(q[i]) || q[i] < arm.limits.position_min[i] ||
+          q[i] > arm.limits.position_max[i]) {return false;}
+    }
+    return true;
+  }
+
+  void onFkQuery(const std::shared_ptr<move_msgs::srv::QueryFk::Request> req,
+    std::shared_ptr<move_msgs::srv::QueryFk::Response> res)
+  {
+    res->model_sha256 = model_sha256_;
+    auto * arm = queryArm(req->arm);
+    if (!arm || !validQueryJoints(*arm, req->joints)) {
+      res->message = "invalid arm/joints/limits"; return;
+    }
+    Vec3 p{0,0,0}, r{0,0,0};
+    res->ok = arm->use_moveit ? arm->moveit.fk(req->joints,p,r) : arm->chain.fk(req->joints,p,r);
+    if (!res->ok) {res->message = "FK failed"; return;}
+    const auto q = rotvec_to_quat(r);
+    res->pose.header.stamp = now(); res->pose.header.frame_id = root_link_;
+    res->pose.pose.position.x = p[0]; res->pose.pose.position.y = p[1]; res->pose.pose.position.z = p[2];
+    res->pose.pose.orientation.x = q[0]; res->pose.pose.orientation.y = q[1];
+    res->pose.pose.orientation.z = q[2]; res->pose.pose.orientation.w = q[3];
+    res->joint_names = arm->joints; res->message = "read-only model FK; TCP not physically calibrated";
+  }
+
+  void onIkQuery(const std::shared_ptr<move_msgs::srv::QueryIk::Request> req,
+    std::shared_ptr<move_msgs::srv::QueryIk::Response> res)
+  {
+    res->ik_status = 3; res->ik_status_name = "FAILED";
+    res->model_sha256 = model_sha256_;
+    auto * arm = queryArm(req->arm);
+    const auto & q = req->orientation;
+    const double norm2 = q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w;
+    if (!arm || req->frame_id != root_link_ || !std::isfinite(norm2) ||
+        std::fabs(norm2-1) > .002 || !std::isfinite(req->position.x) ||
+        !std::isfinite(req->position.y) || !std::isfinite(req->position.z)) {
+      res->message = "invalid arm/frame/pose"; return;
+    }
+    const auto seed = req->seed_joints.empty() ? arm->q_current : req->seed_joints;
+    if (!validQueryJoints(*arm, seed)) {res->message = "invalid or unavailable seed"; return;}
+    IkOrchestrator solver;
+    IkOrchestrator::Config cfg;
+    cfg.neutral.resize(arm->joints.size());
+    for (std::size_t i=0; i<cfg.neutral.size(); ++i) {
+      cfg.neutral[i] = .5*(arm->limits.position_min[i]+arm->limits.position_max[i]);
+    }
+    solver.configure(cfg, arm->joints.size()); solver.setLimits(arm->limits);
+    if (arm->use_moveit) {
+      solver.setSolver(makeMoveItSolveFn(&arm->moveit), makeMoveItFkFn(&arm->moveit));
+    } else {
+      solver.setSolver(makeKdlSolveFn(&arm->chain), makeKdlFkFn(&arm->chain));
+    }
+    IkRequest request;
+    request.position = Vec3{req->position.x,req->position.y,req->position.z};
+    request.rotation = quat_to_rotvec(Quat{q.x,q.y,q.z,q.w}); request.seed = seed;
+    const auto result = solver.solve(request);
+    res->ok = true; res->message = result.note;
+    res->ik_status = result.outcome == SolverOutcome::Failed ? 3 :
+      (result.outcome == SolverOutcome::LimitClamped ? 2 :
+      (result.residual_kind == TaskResidual::Residual ? 1 : 0));
+    res->ik_status_name = res->ik_status == 0 ? "EXACT" :
+      (res->ik_status == 1 ? "RESIDUAL" : (res->ik_status == 2 ? "LIMIT_CLAMPED" : "FAILED"));
+    res->position_residual_norm = result.positionResidualNorm();
+    res->orientation_residual_norm = result.rotationResidualNorm();
+    res->position_residual.x = result.position_residual[0];
+    res->position_residual.y = result.position_residual[1];
+    res->position_residual.z = result.position_residual[2];
+    res->orientation_residual.x = result.rotation_residual[0];
+    res->orientation_residual.y = result.rotation_residual[1];
+    res->orientation_residual.z = result.rotation_residual[2];
+    for (auto i : result.saturated_joints) {res->saturated_joints.push_back(arm->joints[i]);}
+    if (req->want_joints) {res->joints = result.joints;}
+  }
+
+  rclcpp::Service<move_msgs::srv::QueryIk>::SharedPtr ik_query_srv_;
+  rclcpp::Service<move_msgs::srv::QueryFk>::SharedPtr fk_query_srv_;
+  std::string model_sha256_;
   std::string input_target_topic_;
   std::string output_joint_topic_;
   std::string joint_states_topic_;

@@ -92,3 +92,13 @@ ros2 launch lite_ik_node lite_ik_node.launch.py
 
 - URDF、SRDF 的根链接、末端链接和关节组必须相互一致。
 - 节点只发布关节目标，不直接向电机或 `lite_bridge` 发命令。
+
+## Read-only model queries
+
+`~/fk_query` (`move_msgs/srv/QueryFk`) and `~/ik_query`
+(`move_msgs/srv/QueryIk`) use this node's loaded URDF, root and TCP. They never
+publish a movement target or update the streaming solver's last command.
+Explicit joint seeds are checked against the model. IK returns EXACT=0,
+RESIDUAL=1, LIMIT_CLAMPED=2 or FAILED=3, residuals, saturated joints and the loaded
+URDF SHA-256. FK uses metres and xyzw quaternions. Model queries and IK preview
+are not evidence of physical calibration, collision freedom or force safety.
