@@ -28,6 +28,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(move_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(orocos_kdl_vendor REQUIRED)
 find_package(kdl_parser REQUIRED)
@@ -63,7 +64,7 @@ target_link_libraries(lite_ik_node_kinematics yaml-cpp::yaml-cpp orocos-kdl CURL
 add_executable(lite_ik_node src/ik_node.cpp)
 target_link_libraries(lite_ik_node lite_ik_node_kinematics)
 ament_target_dependencies(lite_ik_node
-  rclcpp geometry_msgs sensor_msgs visualization_msgs move_msgs urdf ament_index_cpp)
+  rclcpp geometry_msgs sensor_msgs visualization_msgs move_msgs std_srvs urdf ament_index_cpp)
 
 add_executable(test_ik_orchestrator test/test_ik_orchestrator.cpp)
 target_link_libraries(test_ik_orchestrator lite_ik_node_kinematics)

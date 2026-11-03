@@ -13,3 +13,7 @@ lite_ik_node:
     max_joint_jump_rad: 0.35
     max_joint_vel: 2.0
     max_joint_acc: 12.0
+    recovery_duration_s: 1.2
+    drift_threshold_rad: 0.15
+    target_gap_timeout_ms: 150.0
+    ik_mode_override: "auto"

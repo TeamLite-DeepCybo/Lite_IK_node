@@ -26,6 +26,7 @@
 #include <move_msgs/msg/move_target.hpp>
 #include <move_msgs/msg/move_target_array.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
+#include <std_srvs/srv/trigger.hpp>
 
 #include <urdf_parser/urdf_parser.h>
 
@@ -44,6 +45,12 @@
 
 namespace lite_move_controller
 {
+
+enum class IkMode
+{
+  NORMAL,
+  RECOVERY
+};
 
 struct ArmIkContext
 {
@@ -65,10 +72,19 @@ struct ArmIkContext
   bool have_last_solved{false};
   rclcpp::Time last_target_time{0, 0, RCL_ROS_TIME};
 
+  // ---- 模式状态机与同伦恢复过渡 ----
+  IkMode mode{IkMode::NORMAL};
+  bool recovery_requested{false};
+  rclcpp::Time recovery_start_time{0, 0, RCL_ROS_TIME};
+  Vec3 recovery_start_p{0, 0, 0};
+  Vec3 recovery_start_r{0, 0, 0};
+  std::vector<double> recovery_start_q;
+
   // 统计指标
   std::uint64_t diff_ik_success_count{0};
   std::uint64_t fallback_count{0};
   std::uint64_t total_requests{0};
+  std::uint64_t recovery_count{0};
   double last_residual_pos{0.0};
   double last_residual_rot{0.0};
 };
@@ -108,6 +124,11 @@ private:
     declare_parameter<double>("max_joint_vel", 2.0);       // 关节速度上限（rad/s）
     declare_parameter<double>("max_joint_acc", 12.0);      // 关节加速度上限（rad/s^2）
 
+    declare_parameter<double>("recovery_duration_s", 1.2);   // 恢复模式过渡时长（s）
+    declare_parameter<double>("drift_threshold_rad", 0.15);  // 触发恢复的偏离阈值（rad）
+    declare_parameter<double>("target_gap_timeout_ms", 150.0); // 目标断帧超时门限（ms）
+    declare_parameter<std::string>("ik_mode_override", "auto"); // 模式覆盖：auto/force_recovery/force_normal
+
     // 默认关节列表
     declare_parameter<std::vector<std::string>>(
         "joints_left",
@@ -134,6 +155,11 @@ private:
     max_joint_vel_ = get_parameter("max_joint_vel").as_double();
     max_joint_acc_ = get_parameter("max_joint_acc").as_double();
 
+    recovery_duration_s_ = get_parameter("recovery_duration_s").as_double();
+    drift_threshold_rad_ = get_parameter("drift_threshold_rad").as_double();
+    target_gap_timeout_ms_ = get_parameter("target_gap_timeout_ms").as_double();
+    ik_mode_override_ = get_parameter("ik_mode_override").as_string();
+
     joints_left_ = get_parameter("joints_left").as_string_array();
     joints_right_ = get_parameter("joints_right").as_string_array();
   }
@@ -154,6 +180,7 @@ private:
         ament_index_cpp::get_package_share_directory("lite_ik_node") +
         "/config/model/lite_000_asm.urdf");
     } catch (const std::exception &) {}
+    candidates.push_back("src/Lite_IK_node/config/model/lite_000_asm.urdf");
     candidates.push_back("src/lite_ik_node/config/model/lite_000_asm.urdf");
     for (const auto & p : candidates) {
       std::ifstream f(p);
@@ -190,6 +217,18 @@ private:
 
     pub_joint_targets_ = create_publisher<move_msgs::msg::MoveTargetArray>(
         output_joint_topic_, 10);
+
+    trigger_recovery_srv_ = create_service<std_srvs::srv::Trigger>(
+        "~/trigger_recovery",
+        [this](const std::shared_ptr<std_srvs::srv::Trigger::Request>,
+               std::shared_ptr<std_srvs::srv::Trigger::Response> res) {
+          for (auto & arm : arms_) {
+            arm.recovery_requested = true;
+          }
+          res->success = true;
+          res->message = "已触发双臂 RECOVERY 模式请求";
+          RCLCPP_INFO(get_logger(), "外部服务调用：强制触发 RECOVERY 恢复模式");
+        });
   }
 
   void setupArms()
@@ -217,6 +256,7 @@ private:
       arm.offset = offset;
       arm.q_current.assign(joints.size(), 0.0);
       arm.q_last_solved.assign(joints.size(), 0.0);
+      arm.recovery_start_q.assign(joints.size(), 0.0);
 
       // 限位构建
       arm.limits.position_min.assign(joints.size(), -3.14);
@@ -311,9 +351,7 @@ private:
       if (all_found) {
         arm.q_current = q_found;
         arm.have_q_current = true;
-        const auto now_t = now();
-        if (!arm.have_last_solved ||
-            (now_t.nanoseconds() - arm.last_target_time.nanoseconds() > 300000000LL)) {
+        if (!arm.have_last_solved) {
           arm.q_last_solved = q_found;
           arm.v_last_solved.assign(arm.joints.size(), 0.0);
           arm.have_last_solved = true;
@@ -326,6 +364,13 @@ private:
   {
     move_msgs::msg::MoveTargetArray out_msg;
     out_msg.targets.reserve(msg->targets.size());
+    const auto now_t = now();
+
+    // 动态读取模式覆盖参数（支持在线动态调整）
+    std::string mode_override = ik_mode_override_;
+    if (has_parameter("ik_mode_override")) {
+      mode_override = get_parameter("ik_mode_override").as_string();
+    }
 
     for (const auto & in_target : msg->targets) {
       move_msgs::msg::MoveTarget out_target = in_target;
@@ -345,7 +390,7 @@ private:
           arm->q_last_solved = in_target.joint_positions;
           arm->v_last_solved.assign(arm->joints.size(), 0.0);
           arm->have_last_solved = true;
-          arm->last_target_time = now();
+          arm->last_target_time = now_t;
         }
         out_msg.targets.push_back(out_target);
         continue;
@@ -364,31 +409,116 @@ private:
         continue;
       }
 
-      arm->last_target_time = now();
       ++arm->total_requests;
 
-      // 连续性安全防护：若历史解与当前实测偏差较大（>0.15 rad），重新锚定到实测当前位置
-      if (arm->have_q_current && arm->have_last_solved) {
-        double max_drift = 0.0;
-        for (std::size_t j = 0; j < arm->joints.size(); ++j) {
-          max_drift = std::max(max_drift, std::fabs(arm->q_last_solved[j] - arm->q_current[j]));
-        }
-        if (max_drift > 0.15) {
-          arm->q_last_solved = arm->q_current;
-          arm->v_last_solved.assign(arm->joints.size(), 0.0);
+      // 1. 监测目标断帧间隙与关节实测漂移
+      bool target_gap_timeout = false;
+      if (arm->last_target_time.nanoseconds() > 0) {
+        const double gap_ms = (now_t.nanoseconds() - arm->last_target_time.nanoseconds()) * 1e-6;
+        if (gap_ms > target_gap_timeout_ms_) {
+          target_gap_timeout = true;
         }
       }
 
+      double max_drift = 0.0;
+      if (arm->have_q_current && arm->have_last_solved) {
+        for (std::size_t j = 0; j < arm->joints.size(); ++j) {
+          max_drift = std::max(max_drift, std::fabs(arm->q_last_solved[j] - arm->q_current[j]));
+        }
+      }
+
+      // 2. 状态机模式判定与流转
+      bool trigger_recovery = false;
+      if (mode_override == "force_recovery" || arm->recovery_requested) {
+        trigger_recovery = true;
+      } else if (mode_override != "force_normal") {
+        if (target_gap_timeout || max_drift > drift_threshold_rad_) {
+          trigger_recovery = true;
+        }
+      }
+
+      // NORMAL -> RECOVERY 流转
+      if (arm->mode == IkMode::NORMAL && trigger_recovery) {
+        arm->mode = IkMode::RECOVERY;
+        arm->recovery_requested = false;
+        arm->recovery_start_time = now_t;
+        ++arm->recovery_count;
+
+        // 起点锚定：以物理实测位置为绝对连续起点
+        if (arm->have_q_current) {
+          arm->recovery_start_q = arm->q_current;
+        } else {
+          arm->recovery_start_q = arm->q_last_solved;
+        }
+        if (!arm->chain.fk(arm->recovery_start_q, arm->recovery_start_p, arm->recovery_start_r)) {
+          arm->recovery_start_p = Vec3{in_target.position.x, in_target.position.y, in_target.position.z};
+          Quat q_tmp{in_target.orientation.x, in_target.orientation.y,
+                     in_target.orientation.z, in_target.orientation.w};
+          arm->recovery_start_r = quat_to_rotvec(q_tmp);
+        }
+        arm->q_last_solved = arm->recovery_start_q;
+        arm->v_last_solved.assign(arm->joints.size(), 0.0);
+        arm->have_last_solved = true;
+
+        RCLCPP_WARN(get_logger(),
+                    "臂 '%s' 触发 RECOVERY 恢复模式：(drift=%.3f rad, gap_timeout=%d, req=%d)，"
+                    "开启五次同伦混合平滑过渡 (时长 %.2f s)",
+                    arm->name.c_str(), max_drift, static_cast<int>(target_gap_timeout),
+                    static_cast<int>(arm->recovery_requested), recovery_duration_s_);
+      }
+
+      // RECOVERY -> NORMAL 外部强切判定（安全门禁）
+      if (arm->mode == IkMode::RECOVERY && mode_override == "force_normal") {
+        if (arm->last_residual_pos <= 0.005 && arm->last_residual_rot <= 0.05 &&
+            max_drift <= drift_threshold_rad_) {
+          arm->mode = IkMode::NORMAL;
+          RCLCPP_INFO(get_logger(), "臂 '%s' 外部强制切回 NORMAL 成功（残差已就绪收敛）", arm->name.c_str());
+        } else {
+          RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
+                               "臂 '%s' 外部请求切回 NORMAL，但残差或漂移过大 (res_pos=%.3f m, drift=%.3f rad)，安全门禁保持 RECOVERY",
+                               arm->name.c_str(), arm->last_residual_pos, max_drift);
+        }
+      }
+
+      // 3. 构建当前拍的解算位姿目标
       Vec3 target_p{in_target.position.x, in_target.position.y, in_target.position.z};
       Quat q_tgt{in_target.orientation.x, in_target.orientation.y,
                  in_target.orientation.z, in_target.orientation.w};
       Vec3 target_r = quat_to_rotvec(q_tgt);
 
-      // 种子选择：优先使用上一拍成功解，无解则使用当前实际关节角
+      Vec3 solve_p = target_p;
+      Vec3 solve_r = target_r;
+      bool recovery_finished = false;
+
+      if (arm->mode == IkMode::RECOVERY) {
+        const double elapsed_s = std::max(0.0,
+            (now_t.nanoseconds() - arm->recovery_start_time.nanoseconds()) * 1e-9);
+        const double dur = std::max(0.1, recovery_duration_s_);
+        const double tau = std::min(1.0, elapsed_s / dur);
+        const double s = quintic_blend(tau);
+
+        // 位置同伦多项式插值
+        solve_p[0] = (1.0 - s) * arm->recovery_start_p[0] + s * target_p[0];
+        solve_p[1] = (1.0 - s) * arm->recovery_start_p[1] + s * target_p[1];
+        solve_p[2] = (1.0 - s) * arm->recovery_start_p[2] + s * target_p[2];
+
+        // 姿态 SLERP 球面线性插值
+        const Quat q_start = rotvec_to_quat(arm->recovery_start_r);
+        const Quat q_blend = quat_slerp(q_start, q_tgt, s);
+        solve_r = quat_to_rotvec(q_blend);
+
+        if (tau >= 1.0) {
+          recovery_finished = true;
+        }
+      }
+
+      arm->last_target_time = now_t;
+
+      // 4. 执行逆解求解
       std::vector<double> seed = arm->have_last_solved ? arm->q_last_solved : arm->q_current;
 
-      // ---- 1. 主解算器：微分逆解求解 ----
-      auto diff_res = arm->diff_ik.solve(target_p, target_r, seed);
+      // 主解算器：微分逆解
+      auto diff_res = arm->diff_ik.solve(solve_p, solve_r, seed);
       std::vector<double> solved_q;
       bool success = false;
 
@@ -399,18 +529,17 @@ private:
         arm->last_residual_pos = diff_res.position_residual;
         arm->last_residual_rot = diff_res.rotation_residual;
       } else {
-        // ---- 2. 兜底解算器：退化求解并施加位移惩罚 ----
+        // 兜底解算器
         ++arm->fallback_count;
         std::vector<double> fb_q;
         bool fb_ok = false;
         if (arm->use_moveit) {
-          fb_ok = arm->moveit.ik(target_p, target_r, seed, fb_q);
+          fb_ok = arm->moveit.ik(solve_p, solve_r, seed, fb_q);
         } else {
-          fb_ok = arm->chain.ik(target_p, target_r, seed, fb_q);
+          fb_ok = arm->chain.ik(solve_p, solve_r, seed, fb_q);
         }
 
         if (fb_ok && fb_q.size() == arm->joints.size()) {
-          // 校验跳变惩罚：若与种子偏离过大，判定为跨引力盆翻转，进行保护性拒绝
           double max_jump = 0.0;
           for (std::size_t j = 0; j < arm->joints.size(); ++j) {
             max_jump = std::max(max_jump, std::fabs(fb_q[j] - seed[j]));
@@ -419,7 +548,6 @@ private:
             solved_q = fb_q;
             success = true;
           } else {
-            // 翻转跳变过大：限制步幅单向朝解靠近，防止突跳
             solved_q = seed;
             for (std::size_t j = 0; j < arm->joints.size(); ++j) {
               double dq = fb_q[j] - seed[j];
@@ -429,13 +557,22 @@ private:
             success = true;
           }
         } else {
-          // 连兜底解算都无解：保持上一帧，并记录残差
           solved_q = seed;
         }
       }
 
+      // RECOVERY 自动退出判定：进度满 100% 且解算收敛良好
+      if (arm->mode == IkMode::RECOVERY && recovery_finished) {
+        if (diff_res.ok && max_drift <= drift_threshold_rad_) {
+          arm->mode = IkMode::NORMAL;
+          RCLCPP_INFO(get_logger(),
+                      "臂 '%s' 成功完成 RECOVERY 过渡，已平滑并入主轨迹并切回 NORMAL 模式",
+                      arm->name.c_str());
+        }
+      }
+
+      // 5. 严格速度与加速度物理平滑过滤
       if (success) {
-        // 严格施加关节速度与加速度物理极限平滑拦截（拒绝全域突跳与飞车）
         const double dt = 0.01;
         if (arm->have_last_solved) {
           for (std::size_t j = 0; j < arm->joints.size(); ++j) {
@@ -490,6 +627,11 @@ private:
   double max_joint_vel_{2.0};
   double max_joint_acc_{12.0};
 
+  double recovery_duration_s_{1.2};
+  double drift_threshold_rad_{0.15};
+  double target_gap_timeout_ms_{150.0};
+  std::string ik_mode_override_{"auto"};
+
   std::vector<std::string> joints_left_;
   std::vector<std::string> joints_right_;
 
@@ -498,6 +640,7 @@ private:
   rclcpp::Subscription<move_msgs::msg::MoveTargetArray>::SharedPtr sub_targets_;
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr sub_joint_states_;
   rclcpp::Publisher<move_msgs::msg::MoveTargetArray>::SharedPtr pub_joint_targets_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr trigger_recovery_srv_;
 };
 
 }  // namespace lite_move_controller

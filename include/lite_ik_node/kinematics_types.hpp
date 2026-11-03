@@ -63,6 +63,56 @@ inline Quat rotvec_to_quat(const Vec3 & rv) noexcept
   return Quat{rv[0] * s, rv[1] * s, rv[2] * s, std::cos(half)};
 }
 
+inline Quat quat_slerp(const Quat & q0_in, const Quat & q1_in, double t) noexcept
+{
+  Quat q0 = q0_in;
+  Quat q1 = q1_in;
+  quat_normalize(q0);
+  quat_normalize(q1);
+
+  double dot = quat_dot(q0, q1);
+  if (dot < 0.0) {
+    q1[0] = -q1[0]; q1[1] = -q1[1]; q1[2] = -q1[2]; q1[3] = -q1[3];
+    dot = -dot;
+  }
+
+  if (dot > 0.9995) {
+    Quat res{
+      q0[0] + t * (q1[0] - q0[0]),
+      q0[1] + t * (q1[1] - q0[1]),
+      q0[2] + t * (q1[2] - q0[2]),
+      q0[3] + t * (q1[3] - q0[3])
+    };
+    quat_normalize(res);
+    return res;
+  }
+
+  dot = std::max(-1.0, std::min(1.0, dot));
+  const double theta_0 = std::acos(dot);
+  const double theta = theta_0 * t;
+  const double sin_theta = std::sin(theta);
+  const double sin_theta_0 = std::sin(theta_0);
+
+  const double s0 = std::cos(theta) - dot * sin_theta / sin_theta_0;
+  const double s1 = sin_theta / sin_theta_0;
+
+  Quat res{
+    s0 * q0[0] + s1 * q1[0],
+    s0 * q0[1] + s1 * q1[1],
+    s0 * q0[2] + s1 * q1[2],
+    s0 * q0[3] + s1 * q1[3]
+  };
+  quat_normalize(res);
+  return res;
+}
+
+inline double quintic_blend(double tau) noexcept
+{
+  if (tau <= 0.0) {return 0.0;}
+  if (tau >= 1.0) {return 1.0;}
+  return tau * tau * tau * (10.0 + tau * (-15.0 + tau * 6.0));
+}
+
 struct Jacobian
 {
   std::size_t rows{6};

@@ -580,6 +580,7 @@ std::string loadSrdfText(const std::string & explicit_path,
       if (!c.empty()) {cands.push_back(c);}
     }
     // ③ 源码树回退（开发态未安装本包时使用）。
+    cands.push_back(std::string("src/Lite_IK_node/config/model/") + kSrdfFileName);
     cands.push_back(std::string("src/lite_ik_node/config/model/") + kSrdfFileName);
   }
   for (const auto & c : cands) {
