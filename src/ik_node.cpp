@@ -34,6 +34,8 @@
 #include <chrono>
 #include <cmath>
 #include <memory>
+#include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -120,6 +122,7 @@ private:
     declare_parameter<std::string>("urdf_path", "");
     declare_parameter<std::string>("srdf_path", "");
     declare_parameter<std::string>("ik.solver_plugin", "pick_ik/PickIkPlugin");
+    declare_parameter<double>("ik_rate_hz", 25.0);
     declare_parameter<double>("max_joint_jump_rad", 0.35); // 兜底解算器单步跳变防护门限
     declare_parameter<double>("max_joint_vel", 2.0);       // 关节速度上限（rad/s）
     declare_parameter<double>("max_joint_acc", 12.0);      // 关节加速度上限（rad/s^2）
@@ -151,6 +154,10 @@ private:
     urdf_path_ = get_parameter("urdf_path").as_string();
     srdf_path_ = get_parameter("srdf_path").as_string();
     solver_plugin_ = get_parameter("ik.solver_plugin").as_string();
+    ik_rate_hz_ = get_parameter("ik_rate_hz").as_double();
+    if (!std::isfinite(ik_rate_hz_) || ik_rate_hz_ <= 0.0 || ik_rate_hz_ > 1000.0) {
+      throw std::invalid_argument("ik_rate_hz 必须在 (0, 1000] Hz 内");
+    }
     max_joint_jump_rad_ = get_parameter("max_joint_jump_rad").as_double();
     max_joint_vel_ = get_parameter("max_joint_vel").as_double();
     max_joint_acc_ = get_parameter("max_joint_acc").as_double();
@@ -209,7 +216,37 @@ private:
   {
     sub_targets_ = create_subscription<move_msgs::msg::MoveTargetArray>(
         input_target_topic_, 10,
-        std::bind(&IkNode::onTargetArray, this, std::placeholders::_1));
+        [this](const move_msgs::msg::MoveTargetArray::SharedPtr msg) {
+          auto joints = std::make_shared<move_msgs::msg::MoveTargetArray>();
+          for (const auto & target : msg->targets) {
+            if (target.target_type == move_msgs::msg::MoveTarget::TARGET_JOINTS) {
+              pending_targets_.erase(target.arm);
+              joints->targets.push_back(target);
+            } else if (target.target_type == move_msgs::msg::MoveTarget::TARGET_POSE) {
+              pending_targets_[target.arm] = {target, std::chrono::steady_clock::now()};
+            }
+          }
+          if (!joints->targets.empty()) {onTargetArray(joints);}
+        });
+    // 同一默认互斥回调组：每臂仅保留最新位姿，每份样本最多求解一次。
+    ik_timer_ = create_wall_timer(
+      std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::duration<double>(1.0 / ik_rate_hz_)), [this]() {
+        auto targets = std::make_shared<move_msgs::msg::MoveTargetArray>();
+        const auto now = std::chrono::steady_clock::now();
+        for (const auto & entry : pending_targets_) {
+          auto target = entry.second.first;
+          const double age_ms = std::chrono::duration<double, std::milli>(
+              now - entry.second.second).count();
+          const double ttl = target.timeout_ms > 0.0
+              ? std::min(target.timeout_ms, target_gap_timeout_ms_) : target_gap_timeout_ms_;
+          if (age_ms >= ttl) {continue;}
+          target.timeout_ms = ttl - age_ms;
+          targets->targets.push_back(std::move(target));
+        }
+        pending_targets_.clear();
+        if (!targets->targets.empty()) {onTargetArray(targets);}
+      });
 
     sub_joint_states_ = create_subscription<sensor_msgs::msg::JointState>(
         joint_states_topic_, 10,
@@ -291,7 +328,7 @@ private:
       dcfg.k_null = 0.4;
       dcfg.max_joint_vel = max_joint_vel_;
       dcfg.max_joint_acc = max_joint_acc_;
-      dcfg.control_dt = 0.01;
+      dcfg.control_dt = 1.0 / ik_rate_hz_;
       dcfg.max_step_rad = 0.03;
       dcfg.limit_margin_rad = 0.015;
       dcfg.max_iterations = 12;
@@ -362,6 +399,7 @@ private:
 
   void onTargetArray(const move_msgs::msg::MoveTargetArray::SharedPtr msg)
   {
+    const auto solve_started = std::chrono::steady_clock::now();
     move_msgs::msg::MoveTargetArray out_msg;
     out_msg.targets.reserve(msg->targets.size());
     const auto now_t = now();
@@ -386,7 +424,10 @@ private:
             break;
           }
         }
-        if (arm && in_target.joint_positions.size() == arm->joints.size()) {
+        if (!arm || in_target.joint_positions.size() != arm->joints.size() ||
+            !std::all_of(in_target.joint_positions.begin(), in_target.joint_positions.end(),
+                         [](double q) {return std::isfinite(q);})) {continue;}
+        if (arm) {
           arm->q_last_solved = in_target.joint_positions;
           arm->v_last_solved.assign(arm->joints.size(), 0.0);
           arm->have_last_solved = true;
@@ -396,6 +437,13 @@ private:
         continue;
       }
 
+      if (in_target.target_type != move_msgs::msg::MoveTarget::TARGET_POSE) {continue;}
+      const auto & p = in_target.position;
+      const auto & q = in_target.orientation;
+      const double qnorm = std::sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
+      if ((!in_target.frame_id.empty() && in_target.frame_id != root_link_) ||
+          !std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) ||
+          !std::isfinite(qnorm) || std::abs(qnorm - 1.0) > 1e-3) {continue;}
       // 否则为 TARGET_POSE，通过本节点解算
       ArmIkContext * arm = nullptr;
       for (auto & a : arms_) {
@@ -573,7 +621,7 @@ private:
 
       // 5. 严格速度与加速度物理平滑过滤
       if (success) {
-        const double dt = 0.01;
+        const double dt = 1.0 / ik_rate_hz_;
         if (arm->have_last_solved) {
           for (std::size_t j = 0; j < arm->joints.size(); ++j) {
             double v = (solved_q[j] - arm->q_last_solved[j]) / dt;
@@ -609,6 +657,15 @@ private:
       out_msg.targets.push_back(out_target);
     }
 
+    // 求解耗时也计入原样本有效期，不能以新关节消息延长旧目标的寿命。
+    const double elapsed_ms = std::chrono::duration<double, std::milli>(
+        std::chrono::steady_clock::now() - solve_started).count();
+    out_msg.targets.erase(std::remove_if(out_msg.targets.begin(), out_msg.targets.end(),
+      [elapsed_ms](auto & target) {
+        if (target.timeout_ms <= 0.0) {return false;}
+        target.timeout_ms -= elapsed_ms;
+        return target.timeout_ms <= 0.0;
+      }), out_msg.targets.end());
     if (!out_msg.targets.empty()) {
       pub_joint_targets_->publish(out_msg);
     }
@@ -623,6 +680,10 @@ private:
   std::string urdf_path_;
   std::string srdf_path_;
   std::string solver_plugin_;
+  double ik_rate_hz_{25.0};
+  std::map<std::string, std::pair<move_msgs::msg::MoveTarget,
+      std::chrono::steady_clock::time_point>> pending_targets_;
+  rclcpp::TimerBase::SharedPtr ik_timer_;
   double max_joint_jump_rad_{0.35};
   double max_joint_vel_{2.0};
   double max_joint_acc_{12.0};
@@ -654,4 +715,3 @@ int main(int argc, char ** argv)
   rclcpp::shutdown();
   return 0;
 }
-
