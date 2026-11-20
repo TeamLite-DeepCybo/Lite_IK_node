@@ -72,6 +72,16 @@ target_link_libraries(test_ik_orchestrator lite_ik_node_kinematics)
 add_executable(test_ik_kdl test/test_ik_kdl.cpp)
 target_link_libraries(test_ik_kdl lite_ik_node_kinematics)
 
+# ⚠️ 注册到 CTest：这两个可执行文件有自己的 main，不是 gtest，故用裸 add_test。
+#    test_ik_kdl 没有 LITE_ARM_URDF 时会打印 SKIP 并 **返回 0** —— 那是
+#    "假装通过"，必须由 ENVIRONMENT 把模型路径注入进去。
+if(BUILD_TESTING)
+  add_test(NAME test_ik_orchestrator COMMAND $<TARGET_FILE:test_ik_orchestrator>)
+  add_test(NAME test_ik_kdl COMMAND $<TARGET_FILE:test_ik_kdl>)
+  set_tests_properties(test_ik_kdl PROPERTIES ENVIRONMENT
+    "LITE_ARM_URDF=${CMAKE_CURRENT_SOURCE_DIR}/config/model/lite_000_asm.urdf")
+endif()
+
 install(DIRECTORY include/ DESTINATION include)
 install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
 install(TARGETS lite_ik_node
