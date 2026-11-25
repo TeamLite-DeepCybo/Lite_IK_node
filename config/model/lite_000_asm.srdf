@@ -84,6 +84,7 @@
     <passive_joint name="left_gripper_passive_joint"/>
     <passive_joint name="right_gripper_passive_joint"/>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="head_camera_link" link2="world_root" reason="Adjacent"/>
     <disable_collisions link1="left_gripper_finger_left_link" link2="left_gripper_finger_right_link" reason="Default"/>
     <disable_collisions link1="left_gripper_finger_left_link" link2="left_shoulder_pitch_link" reason="Never"/>
     <disable_collisions link1="left_gripper_finger_left_link" link2="left_shoulder_roll_link" reason="Never"/>

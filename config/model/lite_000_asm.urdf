@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!-- =================================================================================== -->
-<!-- |    Generated from the Lite robot xacro and bundled for IK initialization.       | -->
+<!-- |    Generated from the Lite robot xacro (lite_description20261117) for IK.       | -->
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="lite_000_asm">
@@ -159,18 +159,18 @@
       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.0152759 -0.0029996 0.0022"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/left_gripper_finger_left_link_visual.stl"/>
+        <mesh filename="package://lite_description/meshes/left_gripper_finger_left_link_flex.STL"/>
       </geometry>
       <material name="lite_gripper_finger_black">
         <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
       </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.0152759 -0.0029996 0.0022"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/left_gripper_finger_left_link_collision.stl"/>
+        <mesh filename="package://lite_description/meshes/left_gripper_finger_left_link_flex.STL"/>
       </geometry>
     </collision>
   </link>
@@ -181,18 +181,18 @@
       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.0152759 -0.0029996 0.0022"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/right_gripper_finger_left_link_visual.stl"/>
+        <mesh filename="package://lite_description/meshes/right_gripper_finger_left_link_flex.STL"/>
       </geometry>
       <material name="lite_gripper_finger_black">
         <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
       </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.0152759 -0.0029996 0.0022"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/right_gripper_finger_left_link_collision.stl"/>
+        <mesh filename="package://lite_description/meshes/right_gripper_finger_left_link_flex.STL"/>
       </geometry>
     </collision>
   </link>
@@ -203,18 +203,18 @@
       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0.00525 -0.0029996 0.0022"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/left_gripper_finger_right_link_visual.stl"/>
+        <mesh filename="package://lite_description/meshes/left_gripper_finger_right_link_flex.STL"/>
       </geometry>
       <material name="lite_gripper_finger_black">
         <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
       </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0.00525 -0.0029996 0.0022"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/left_gripper_finger_right_link_collision.stl"/>
+        <mesh filename="package://lite_description/meshes/left_gripper_finger_right_link_flex.STL"/>
       </geometry>
     </collision>
   </link>
@@ -225,18 +225,18 @@
       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0.00525 -0.0029996 0.0022"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/right_gripper_finger_right_link_visual.stl"/>
+        <mesh filename="package://lite_description/meshes/right_gripper_finger_right_link_flex.STL"/>
       </geometry>
       <material name="lite_gripper_finger_black">
         <color rgba="0.84705882 0.52549020 0.03137255 1.00000000"/>
       </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0.00525 -0.0029996 0.0022"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/right_gripper_finger_right_link_collision.stl"/>
+        <mesh filename="package://lite_description/meshes/right_gripper_finger_right_link_flex.STL"/>
       </geometry>
     </collision>
   </link>
@@ -329,20 +329,14 @@
       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 -0.0698132 0.845028" xyz="0.000742392 -0.00083578038 -0.01853790746"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/left_wrist_pitch_link_visual.stl"/>
+        <mesh filename="package://lite_description/meshes/left_wrist_pitch_link_flex.STL"/>
       </geometry>
       <material name="lite_wrist_pitch">
         <color rgba="0.47843137 0.45098039 0.47843137 1.00000000"/>
       </material>
     </visual>
-    <collision>
-      <origin rpy="-0.785393176 -0.06981242277 0.845026119" xyz="0.1208810353 -0.1117893004 0.02800887784"/>
-      <geometry>
-        <box size="0.04 0.04 0.01"/>
-      </geometry>
-    </collision>
     <collision>
       <origin rpy="1.500983127 -3.666126471e-06 2.415824556" xyz="0.07690913134 -0.06851299558 -0.01754819854"/>
       <geometry>
@@ -363,20 +357,14 @@
       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 -0.0698132 1.17725" xyz="0.0010251577 -0.0004256539 -0.0186046318"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/right_wrist_pitch_link_visual.stl"/>
+        <mesh filename="package://lite_description/meshes/right_wrist_pitch_link_flex.STL"/>
       </geometry>
       <material name="lite_wrist_pitch">
         <color rgba="0.47843137 0.45098039 0.47843137 1.00000000"/>
       </material>
     </visual>
-    <collision>
-      <origin rpy="-0.7853878688 -0.06981242277 1.177248119" xyz="0.1513366084 -0.0663160654 0.02735937002"/>
-      <geometry>
-        <box size="0.04 0.04 0.01"/>
-      </geometry>
-    </collision>
     <collision>
       <origin rpy="1.500983127 -3.666126471e-06 2.748046556" xyz="0.09509964415 -0.0395609147 -0.01761512239"/>
       <geometry>
@@ -421,7 +409,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://lite_description/meshes/world_root_visual.stl"/>
+        <mesh filename="package://lite_description/meshes/world_root.STL"/>
       </geometry>
       <material name="lite_world_root">
         <color rgba="0.92156863 0.92156863 0.92156863 1.00000000"/>
@@ -446,6 +434,21 @@
       <mass value="1e-9"/>
       <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
     </inertial>
+    <visual>
+      <origin rpy="-0.1745204368 -0.0008138665 -3.1407787987" xyz="0.0000061314 0.0885244400 -0.0575010619"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/head_camera_link.STL"/>
+      </geometry>
+      <material name="lite_head_camera">
+        <color rgba="0.86667 0.90980 1.00000000 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="-0.1745204368 -0.0008138665 -3.1407787987" xyz="0.0000061314 0.0885244400 -0.0575010619"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/head_camera_link.STL"/>
+      </geometry>
+    </collision>
   </link>
   <link name="left_wrist_camera_link">
     <inertial>
@@ -453,6 +456,21 @@
       <mass value="1e-9"/>
       <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
     </inertial>
+    <visual>
+      <origin rpy="0 -1.5707963268 3.1415926536" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_wrist_camera_link_flex.STL"/>
+      </geometry>
+      <material name="lite_wrist_camera_left">
+        <color rgba="0.47843137 0.45098039 0.47843137 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 -1.5707963268 3.1415926536" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/left_wrist_camera_link_flex.STL"/>
+      </geometry>
+    </collision>
   </link>
   <link name="right_wrist_camera_link">
     <inertial>
@@ -460,6 +478,21 @@
       <mass value="1e-9"/>
       <inertia ixx="1e-12" ixy="0" ixz="0" iyy="1e-12" iyz="0" izz="1e-12"/>
     </inertial>
+    <visual>
+      <origin rpy="0 -1.5707963268 3.1415926536" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_wrist_camera_link_flex.STL"/>
+      </geometry>
+      <material name="lite_wrist_camera">
+        <color rgba="0.47843137 0.45098039 0.47843137 1.00000000"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 -1.5707963268 3.1415926536" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lite_description/meshes/right_wrist_camera_link_flex.STL"/>
+      </geometry>
+    </collision>
   </link>
   <link name="left_gripper_tip_middle_link">
     <inertial>
@@ -696,17 +729,17 @@
   <joint name="head_camera_joint" type="fixed">
     <parent link="world_root"/>
     <child link="head_camera_link"/>
-    <origin rpy="-2.3561871804 0 3.1415926264" xyz="-1.937121605e-06 -0.1082753717 1.010000795"/>
+    <origin rpy="-2.5307199923 0.0001998643 3.1415751406" xyz="0.0000035494 -0.1035086030 1.0000442046"/>
   </joint>
   <joint name="left_wrist_camera_joint" type="fixed">
     <parent link="left_wrist_pitch_link"/>
     <child link="left_wrist_camera_link"/>
-    <origin rpy="-2.3561994776 0.0698124228 -2.2965665346" xyz="0.1237537251 -0.1140010331 0.02440096001"/>
+    <origin rpy="-1.8325993790 0.0077005230 -2.2965644256" xyz="0.04059791022 -0.03710193686 0.04707472824"/>
   </joint>
   <joint name="right_wrist_camera_joint" type="fixed">
     <parent link="right_wrist_pitch_link"/>
     <child link="right_wrist_camera_link"/>
-    <origin rpy="-2.3562047848 0.0698124228 -1.9643445346" xyz="0.1542184407 -0.06728357609 0.02433415705"/>
+    <origin rpy="-1.8325993790 0.0077005230 -1.9643424256" xyz="0.0505293770 -0.0217101250 0.0470080039"/>
   </joint>
   <joint name="left_gripper_tip_middle_joint" type="fixed">
     <parent link="left_wrist_pitch_link"/>
